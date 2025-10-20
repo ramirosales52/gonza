@@ -2,7 +2,7 @@
 export type LogStatus = "SUCCESS" | "FAILURE" | "INFO";
 
 export type AuditLog = {
-  id: string; // uuid or unique string
+  id: number; // changed from string to number to match backend
   timestamp: string; // ISO datetime
   user?: {
     email?: string;
@@ -14,7 +14,7 @@ export type AuditLog = {
 };
 
 export const makeAudit = (
-  id: string,
+  id: number,
   action: string,
   opts?: Partial<Omit<AuditLog, "id" | "action">>
 ): AuditLog => ({

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseGuards, Request } from '@nestjs/common';
 import { MarcaService } from './marca.service';
 import { CreateMarcaDto } from './dto/create-marca.dto';
 import { UpdateMarcaDto } from './dto/update-marca.dto';
@@ -6,16 +6,26 @@ import { JwtAuthGuard } from '../auth/auth-roles.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorators';
 import { Role } from '../common/enums/roles.enums';
+import { LogsService } from '../logs/logs.service';
 
 @Controller('marcas')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class MarcaController {
-  constructor(private readonly service: MarcaService) {}
+  constructor(
+    private readonly service: MarcaService,
+    private readonly logsService: LogsService,
+  ) {}
 
   @Post()
   @Roles(Role.AUDITOR)
-  create(@Body() dto: CreateMarcaDto) {
-    return this.service.create(dto);
+  async create(@Body() dto: CreateMarcaDto, @Request() req) {
+    const result = await this.service.create(dto);
+    await this.logsService.createSuccessLog(
+      'CREATE_BRAND',
+      req.user.id,
+      `Usuario ${req.user.email} creó marca: ${dto.name}`,
+    );
+    return result;
   }
 
   @Get()
@@ -35,13 +45,25 @@ export class MarcaController {
 
   @Patch(':id')
   @Roles(Role.AUDITOR)
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateMarcaDto) {
-    return this.service.update(id, dto);
+  async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateMarcaDto, @Request() req) {
+    const result = await this.service.update(id, dto);
+    await this.logsService.createSuccessLog(
+      'UPDATE_BRAND',
+      req.user.id,
+      `Usuario ${req.user.email} actualizó marca ID: ${id}`,
+    );
+    return result;
   }
 
   @Delete(':id')
   @Roles(Role.AUDITOR)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.service.remove(id);
+  async remove(@Param('id', ParseIntPipe) id: number, @Request() req) {
+    const result = await this.service.remove(id);
+    await this.logsService.createSuccessLog(
+      'DELETE_BRAND',
+      req.user.id,
+      `Usuario ${req.user.email} eliminó marca ID: ${id}`,
+    );
+    return result;
   }
 }

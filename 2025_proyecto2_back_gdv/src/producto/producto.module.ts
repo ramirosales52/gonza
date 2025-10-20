@@ -8,10 +8,11 @@ import { PrismaProductoRepository } from './repositories/prisma-producto.reposit
 import { IProductoRepositoryToken } from './repositories/producto.repository.interface';
 import { ProductoValidator } from './producto.validator';
 import { AuthModule } from '../auth/auth.module';
+import { LogsModule } from '../logs/logs.module';
 
 
 @Module({
-  imports: [MarcaModule, CategoriaModule, AuthModule],
+  imports: [MarcaModule, CategoriaModule, AuthModule, LogsModule],
   controllers: [ProductoController],
   providers: [
     ProductoService,

@@ -5,9 +5,10 @@ import { IFacturaRepositoryToken } from './repositories/factura.repository.inter
 import { PrismaFacturaRepository } from './repositories/prisma-factura.repository';
 import { ProductoModule } from 'src/producto/producto.module';
 import { AuthModule } from '../auth/auth.module';
+import { LogsModule } from '../logs/logs.module';
 
 @Module({
-  imports: [ProductoModule, AuthModule],
+  imports: [ProductoModule, AuthModule, LogsModule],
   controllers: [FacturaController],
   providers: [
     FacturaService,
